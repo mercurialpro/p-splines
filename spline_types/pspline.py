@@ -131,7 +131,7 @@ class p_spline:
 
 
 
-def plot_spline(example=(0, 10, 101)):
+def plot_spline(example=(0, 10, 100)):
     x = np.linspace(example[0], example[1], example[2])
     y = np.sin(x) + np.random.normal(0, 0.5, size=len(x))
     pspline = p_spline(x, y)
