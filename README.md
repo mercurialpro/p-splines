@@ -22,6 +22,7 @@
 - **Харламов А.Д.** - [harlamov1130@gmail.com](mailto:harlamov1130@gmail.com)
 - **Швецова О.С.** - [oksana.shvetsova.03@mail.ru](mailto:oksana.shvetsova.03@mail.ru)
 - **Ерохина Э.А.** - [elya.erokhina23@mail.ru](mailto:elya.erokhina23@mail.ru)
+- **Бесхитров М.В.** - [kon3gor@gmail.com](mailto:kon3gor@gmail.com)
 
 ## Научный руководитель
 **Парфенов Денис Васильевич**
