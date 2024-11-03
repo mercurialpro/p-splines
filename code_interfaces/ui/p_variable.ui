@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SliderWindow</class>
+ <widget class="QWidget" name="SliderWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>431</width>
+    <height>777</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Выбор значений</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_start">
+     <property name="text">
+      <string>Start: 0</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_start">
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_stop">
+     <property name="text">
+      <string>Stop: 10</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_stop">
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>10</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_num">
+     <property name="text">
+      <string>Количество точек: 2</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_num">
+     <property name="minimum">
+      <number>2</number>
+     </property>
+     <property name="maximum">
+      <number>500</number>
+     </property>
+     <property name="value">
+      <number>2</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_bc_without">
+     <property name="text">
+      <string>Без граничных условий</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup</string>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_bc_natural">
+     <property name="text">
+      <string>Natural</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup</string>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_bc_clamped">
+     <property name="text">
+      <string>Clamped по y</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup</string>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_clamped_left">
+     <property name="text">
+      <string>Clamped values left: 0</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_clamped_values_left">
+     <property name="minimum">
+      <number>-10</number>
+     </property>
+     <property name="maximum">
+      <number>10</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_clamped_right">
+     <property name="text">
+      <string>Clamped values right: 0</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_clamped_values_right">
+     <property name="minimum">
+      <number>-10</number>
+     </property>
+     <property name="maximum">
+      <number>10</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_penalty_fun">
+     <property name="text">
+      <string>penalty функция:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_penalty_fun_default">
+     <property name="text">
+      <string>Значение по умолчанию </string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup_2</string>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_penalty_fun_sin">
+     <property name="text">
+      <string>sin</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup_2</string>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_penalty_fun_cos">
+     <property name="text">
+      <string>cos</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup_2</string>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_penalty_fun_exp">
+     <property name="text">
+      <string>exp</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup_2</string>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_generation">
+     <property name="text">
+      <string>Метод генерации точек:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_generation_default">
+     <property name="text">
+      <string>по умолчанию(random)</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_generation_sin">
+     <property name="text">
+      <string>sin</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_generation_cos">
+     <property name="text">
+      <string>cos</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_generation_exp">
+     <property name="text">
+      <string>exp</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_generation_power">
+     <property name="text">
+      <string>x^a</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_power">
+     <property name="text">
+      <string>a= 0</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_power">
+     <property name="minimum">
+      <number>-10</number>
+     </property>
+     <property name="maximum">
+      <number>10</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="invertedAppearance">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_noise">
+     <property name="text">
+      <string>Шум: 0.0</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_noise">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="singleStep">
+      <number>1</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="button_apply">
+     <property name="text">
+      <string>Построить</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+ </buttongroups>
+</ui>
