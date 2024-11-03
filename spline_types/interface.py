@@ -2,6 +2,7 @@ from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QListWidgetItem
 from spline_types.pspline import plot_spline
+from spline_types.splines import plot_p_spline
 
 class MainWindow(QMainWindow):
 	def __init__(self):
@@ -66,7 +67,7 @@ class MainWindow(QMainWindow):
 
 	def label_now(self):
 		"""Выводит сообщение и отображает график для p-сплайна."""
-		plot_spline()
+		plot_p_spline()
 		self.label_output.setText("График p-сплайн был выбран и нажата кнопка Выполнить.")
 
 	def run_slider_window(self):
@@ -78,13 +79,15 @@ class MainWindow(QMainWindow):
 class SliderWindow(QWidget):
 	def __init__(self):
 		super().__init__()
-		uic.loadUi('spline_types/variable.ui', self)
+		uic.loadUi('spline_types/p_variable.ui', self)
 
 		# Привязка сигналов ползунков и кнопки к методам
 		self.slider_start.valueChanged.connect(self.update_start)
 		self.slider_stop.valueChanged.connect(self.update_stop)
 		self.slider_num.valueChanged.connect(self.update_num)
 		self.button_apply.clicked.connect(self.validate_values)
+
+
 
 	def update_start(self, value):
 		"""Обновление начальной точки."""
@@ -97,18 +100,26 @@ class SliderWindow(QWidget):
 	def update_num(self, value):
 		"""Обновление количества точек."""
 		self.label_num.setText(f"Num: {value}")
+	def update_bc(self, value):
+		"""Обновление количества точек."""
+		self.label_num.setText(f"Num: {value}")
 
 	def validate_values(self):
 		"""Проверка и вывод значений ползунков."""
 		start, stop, num = self.slider_start.value(), self.slider_stop.value(), self.slider_num.value()
-
+		if self.radioButton_1.isChecked():
+			bc = None
+		elif self.radioButton_2.isChecked():
+			bc = 1
+		elif self.radioButton_3.isChecked():
+			bc = 2
 		if start >= stop:
 			print("Ошибка: Start должен быть меньше Stop!")
 		elif num < 2:
 			print("Ошибка: количество точек должно быть больше или равно 2!")
 		else:
 			print(f"Start: {start}, Stop: {stop}, Num: {num}")
-			plot_spline((start, stop, num))
+			plot_p_spline(start, stop, num, bc)
 			self.close()
 
 
