@@ -1,3 +1,3 @@
-from spline_types.interface import start
+from code_interfaces.interface import start
 if __name__ == '__main__':
     start()

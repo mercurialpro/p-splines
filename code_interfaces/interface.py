@@ -1,14 +1,13 @@
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QListWidgetItem
-from spline_types.splines import plot_p_spline
-
+from code_interfaces.splines import plot_p_spline
 class MainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
 
 		# Загружаем интерфейс из файла .ui
-		uic.loadUi("spline_types/main.ui", self)
+		uic.loadUi("code_interfaces/ui/main.ui", self)
 
 		# Подключение кнопок выполнить, тест и выход к соответствующим методам
 		self.buttonExecute.clicked.connect(self.on_execute)
@@ -131,7 +130,7 @@ class MainWindow(QMainWindow):
 class SliderWindow(QWidget):
 	def __init__(self):
 		super().__init__()
-		uic.loadUi('spline_types/p_variable.ui', self)
+		uic.loadUi('code_interfaces/ui/p_variable.ui', self)
 		# Привязка сигналов ползунков и кнопки к методам
 		self.slider_start.valueChanged.connect(self.update_start)
 		self.slider_stop.valueChanged.connect(self.update_stop)
@@ -182,5 +181,3 @@ def start():
 	window.show()
 
 	app.exec()
-
-start()

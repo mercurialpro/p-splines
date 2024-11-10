@@ -316,7 +316,7 @@ def plot_p_spline(start=0,stop=10,num=100, boundary_conditions=None):
     spline_P.method_specific_to_p_spline()
 
 
-
+# Для отладки
 if __name__ == "__main__":
     plot_p_spline()
 
