@@ -1,7 +1,7 @@
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QListWidgetItem
-from code_interfaces.splines import plot_p_spline
+from code_interfaces.splines import p_spline, linear_spline
 class MainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
@@ -72,13 +72,18 @@ class MainWindow(QMainWindow):
 			if self.ExampleButton.isChecked():
 				self.handle_p_spline()
 			elif self.VariableButton.isChecked():
-				self.run_slider_window()
+				self.run_p_spline_slider_window()
 			else:
 				self.label_output.setText("Выберите пример.")
 
 		elif self.linear_radioButton.isChecked():
-			self.handle_linear_spline()
-			self.development()
+			if self.ExampleButton.isChecked():
+				self.handle_linear_spline()
+			elif self.VariableButton.isChecked():
+				self.run_linear_spline_slider_window()
+			else:
+				self.label_output.setText("Выберите пример.")
+
 		elif self.quadratic_radioButton.isChecked():
 			self.handle_quadratic_spline()
 			self.development()
@@ -103,10 +108,12 @@ class MainWindow(QMainWindow):
 
 	def handle_p_spline(self):
 		"""Выводит сообщение и отображает график для p-сплайна."""
-		plot_p_spline()
+		p_spline.plot_p_spline()
 		self.label_output.setText("График p-сплайн был выбран и нажата кнопка Выполнить.")
 
 	def handle_linear_spline(self):
+		linear_spline.plot_linear_spline()
+		self.label_output.setText("График линейного сплайна был выбран и нажата кнопка Выполнить.")
 		pass
 
 	def handle_quadratic_spline(self):
@@ -121,13 +128,17 @@ class MainWindow(QMainWindow):
 		pass
 
 	#слайдер пока реализован только для p-сплайна
-	def run_slider_window(self):
+	def run_p_spline_slider_window(self):
 		"""Открывает окно с ползунками для выбора значений."""
-		self.slider_window = SliderWindow()
+		self.slider_window = SliderWindow_p()
+		self.slider_window.show()
+	def run_linear_spline_slider_window(self):
+		"""Открывает окно с ползунками для выбора значений."""
+		self.slider_window = SliderWindow_linear()
 		self.slider_window.show()
 
 
-class SliderWindow(QWidget):
+class SliderWindow_p(QWidget):
 	def __init__(self):
 		super().__init__()
 		uic.loadUi('code_interfaces/ui/p_variable.ui', self)
@@ -169,15 +180,57 @@ class SliderWindow(QWidget):
 			print("Ошибка: количество точек должно быть больше или равно 2!")
 		else:
 			print(f"Start: {start}, Stop: {stop}, Num: {num}")
-			plot_p_spline(start, stop, num, bc)
+			p_spline.plot_p_spline(start, stop, num, bc)
 			self.close()
 
+class SliderWindow_linear(QWidget):
+	def __init__(self):
+		super().__init__()
+		uic.loadUi('code_interfaces/ui/linear_variable.ui', self)
+		# Привязка сигналов ползунков и кнопки к методам
+		self.slider_start.valueChanged.connect(self.update_start)
+		self.slider_stop.valueChanged.connect(self.update_stop)
+		self.slider_num.valueChanged.connect(self.update_num)
+		self.button_apply.clicked.connect(self.validate_values)
+
+
+
+	def update_start(self, value):
+		"""Обновление начальной точки."""
+		self.label_start.setText(f"Start: {value}")
+
+	def update_stop(self, value):
+		"""Обновление конечной точки."""
+		self.label_stop.setText(f"Stop: {value}")
+
+	def update_num(self, value):
+		"""Обновление количества точек."""
+		self.label_num.setText(f"Num: {value}")
+	def update_bc(self, value):
+		"""Обновление количества точек."""
+		self.label_num.setText(f"Num: {value}")
+
+	def validate_values(self):
+		"""Проверка и вывод значений ползунков."""
+		start, stop, num = (self.slider_start.value(),
+							self.slider_stop.value(), self.slider_num.value())
+		if start >= stop:
+			print("Ошибка: Start должен быть меньше Stop!")
+		elif num < 2:
+			print("Ошибка: количество точек должно быть больше или равно 2!")
+		else:
+			print(f"Start: {start}, Stop: {stop}, Num: {num}")
+			linear_spline.plot_linear_spline(start, stop, num)
+			self.close()
 
 def start():
 	"""Создает и запускает приложение."""
-	app = QApplication([])
+	app = QApplication.instance()
+	if app is None:  # Проверяем, запущено ли приложение
+		app = QApplication([])
 
 	window = MainWindow()
 	window.show()
 
-	app.exec()
+	if not app.exec():  # Запускаем цикл событий только один раз
+		app.exec()

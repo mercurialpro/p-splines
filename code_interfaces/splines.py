@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import BSpline
 # Базовый класс Spline
-class Spline:
+class spline:
     def __init__(self, knots, degree, coefficients=None, dimension=1):
         """
         Инициализация базового класса Spline.
@@ -67,8 +67,61 @@ class Spline:
         """
         return p_spline(x, y, knots, degree, penalty_order, lambda_, dimension)
 
+# Подкласс линейный сплайн
+class linear_spline(spline):
+    def __init__(self, knots, coefficients):
+        """
+        Инициализация класса LinearSpline.
+
+        Параметры:
+        - knots (array-like): Узлы линейного сплайна.
+        - coefficients (array-like): Значения в узлах (они же коэффициенты для линейного сплайна).
+        """
+        super().__init__(knots, degree=1, coefficients=coefficients)
+
+    def evaluate(self, x):
+        """
+        Вычисление значения линейного сплайна в точке x с помощью линейной интерполяции.
+        """
+        return np.interp(x, self.knots, self.coefficients)
+
+    def plot_spline(self, **kwargs):
+        """
+        Построение линейного сплайна, соединяя каждый узел отрезками напрямую.
+
+        """
+        plt.figure(figsize=(10, 6))
+        plt.plot(self.knots, self.coefficients, 'b-', label='LinearSpline сплайн')  # Линия синего цвета
+        plt.plot(self.knots, self.coefficients, 'ro', label="Узлы сплайна")  # Точки узлов красные
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title("Построение LinearSpline сплайна")
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+
+    @staticmethod
+    def plot_linear_spline(start=0, stop=10, num=5):
+        """
+        Статический метод для генерации случайных точек и построения линейного сплайна.
+
+        Параметры:
+        - start (float): Начальное значение диапазона x.
+        - stop (float): Конечное значение диапазона x.
+        - num (int): Количество случайных точек.
+        """
+        # Генерация случайных значений для x и y
+        x_data = np.sort(np.random.uniform(start, stop, num))  # Случайные значения x
+        y_data = np.random.uniform(0, 10, num)                 # Случайные значения y
+
+        # Создание объекта линейного сплайна
+        linearspline = linear_spline(x_data, y_data)
+
+        # Построение графика линейного сплайна
+        linearspline.plot_spline()
+
 # Подкласс p_spline
-class p_spline(Spline):
+class p_spline(spline):
     def __init__(self, x, y, knots=None, degree=3, penalty_order=2, lambda_=1.0, dimension=1):
         """
         Инициализация объекта p_spline.
@@ -275,52 +328,54 @@ class p_spline(Spline):
         """
         #print("Это метод, специфичный для p_spline.")
 
-def plot_p_spline(start=0,stop=10,num=100, boundary_conditions=None):
-    # Генерация данных
-    np.random.seed()  # Для воспроизводимости
-    x_data = np.linspace(start, stop, num)
-    y_data = np.sin(x_data) + np.random.normal(0, 0.2, size=len(x_data))
+    @staticmethod
 
-    # Создание объекта p_spline через фабричный метод базового класса Spline
-    spline_P = Spline.create_p_spline(
-        x=x_data,
-        y=y_data,
-        degree=3,
-        penalty_order=2,
-        lambda_=1.0
-    )
+    def plot_p_spline(start=0,stop=10,num=100, boundary_conditions=None):
+        # Генерация данных
+        np.random.seed()  # Для воспроизводимости
+        x_data = np.linspace(start, stop, num)
+        y_data = np.sin(x_data) + np.random.normal(0, 0.2, size=len(x_data))
 
-    # Использование методов базового класса Spline
-    x_new = np.linspace(0, 10, 200)
-    y_new = spline_P.evaluate(x_new)
+        # Создание объекта p_spline через фабричный метод базового класса Spline
+        spline_p = spline.create_p_spline(
+            x=x_data,
+            y=y_data,
+            degree=3,
+            penalty_order=2,
+            lambda_=1.0
+        )
 
-    # Построение графика сплайна без граничных условий
+        # Использование методов базового класса Spline
+        x_new = np.linspace(0, 10, 200)
+        y_new = spline_p.evaluate(x_new)
 
-    # 1-natural
-    # 2-clamped
-    # Установка граничных условий, если они заданы
-    if boundary_conditions == 1:
-        spline_P.set_boundary_conditions(bc_type='natural')
-        spline_P.plot_spline(x_range=(start, stop), num_points=200)
-        print("Сплайн с граничными условиями 'natural':")
-    elif boundary_conditions == 2:
-        clamped_values = {'left': 1.0, 'right': -1.0}  # Пример значений производных
-        spline_P.set_boundary_conditions(bc_type='clamped', bc_values=clamped_values)
-        spline_P.plot_spline(x_range=(start, stop), num_points=200)
-        print("Сплайн с граничными условиями 'natural':")
-    else:
-        spline_P.plot_spline(x_range=(start, stop), num_points=200)
-        print("Сплайн без граничных условий:")
+        # Построение графика сплайна без граничных условий
 
-    # Использование специфичного метода p_spline
-    spline_P.method_specific_to_p_spline()
+        # 1-natural
+        # 2-clamped
+        # Установка граничных условий, если они заданы
+        if boundary_conditions == 1:
+            spline_p.set_boundary_conditions(bc_type='natural')
+            spline_p.plot_spline(x_range=(start, stop), num_points=200)
+            print("Сплайн с граничными условиями 'natural':")
+        elif boundary_conditions == 2:
+            clamped_values = {'left': 1.0, 'right': -1.0}  # Пример значений производных
+            spline_p.set_boundary_conditions(bc_type='clamped', bc_values=clamped_values)
+            spline_p.plot_spline(x_range=(start, stop), num_points=200)
+            print("Сплайн с граничными условиями 'natural':")
+        else:
+            spline_p.plot_spline(x_range=(start, stop), num_points=200)
+            print("Сплайн без граничных условий:")
+
+        # Использование специфичного метода p_spline
+        spline_p.method_specific_to_p_spline()
 
 
 # Для отладки
 if __name__ == "__main__":
-    plot_p_spline()
-
-
+    #p_spline.plot_p_spline()
+    #linear_spline.plot_linear_spline(0, 30, 100)
+    pass
 
 
 
