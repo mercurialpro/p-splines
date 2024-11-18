@@ -196,10 +196,12 @@ class p_spline(spline):
         # После установки граничных условий необходимо повторно выполнить подгонку
         self.fit()
 
-    def fit(self):
+    def fit(self, penalty_fun=None):
         """
-        Аппроксимирует P-сплайн к предоставленным данным с использованием пенализованных наименьших квадратов
-        и учитывая граничные условия, если они заданы.
+        Аппроксимирует P-сплайн к данным с учетом функции штрафа.
+
+        Параметры:
+        - penalty_fun (callable, optional): Функтор для модификации разностной матрицы (например, sin, cos).
         """
         if self.knots is None:
             num_internal_knots = max(int(len(self.x) / 4), 4)
@@ -223,8 +225,14 @@ class p_spline(spline):
             spline = BSpline(t, c, k)
             B[:, i] = spline(self.x)
 
-        # Создаем штрафную матрицу P
+        # Создаем разностную матрицу
         D = self._difference_matrix(n_bases, self.penalty_order)
+
+        # Применяем функтор к разностной матрице, если он задан
+        if penalty_fun is not None:
+            D = penalty_fun(D)
+
+        # Создаем штрафную матрицу P
         P = self.lambda_ * D.T @ D
 
         # Основная система уравнений: (B^T B + P) c = B^T y
@@ -329,14 +337,52 @@ class p_spline(spline):
         #print("Это метод, специфичный для p_spline.")
 
     @staticmethod
+    def plot_p_spline(
+            start=0, stop=10, num=100, boundary_conditions=None, clamped_values=None,
+            penalty_fun=None, point_gen_func="random", power_exp=2, noise_variance=0.0
+    ):
+        """
+        Построение P-сплайна с выбором метода генерации точек и добавлением шума.
 
-    def plot_p_spline(start=0,stop=10,num=100, boundary_conditions=None):
-        # Генерация данных
-        np.random.seed()  # Для воспроизводимости
-        x_data = np.linspace(start, stop, num)
-        y_data = np.sin(x_data) + np.random.normal(0, 0.2, size=len(x_data))
+        Параметры:
+        - start, stop (float): Диапазон значений x.
+        - num (int): Количество точек.
+        - boundary_conditions (str): Тип граничных условий ('natural', 'clamped').
+        - clamped_values (dict): Значения производных для 'clamped' условий.
+        - penalty_fun (callable): Функтор для модификации разностной матрицы.
+        - point_gen_func (str): Метод генерации точек ('random', 'sin', 'cos', 'exp', 'power').
+        - power_exp (float): Экспонента для метода 'power'.
+        - noise_variance (float): Дисперсия шума (0.0 = без шума).
+        """
+        np.random.seed(None)  # Для случайных точек
 
-        # Создание объекта p_spline через фабричный метод базового класса Spline
+        # Генерация точек x и y в зависимости от выбранного метода
+        if point_gen_func == "random":
+            x_data = np.sort(np.random.uniform(low=start, high=stop, size=num))
+            y_data = np.sin(x_data) + np.random.normal(0, 0.2, size=len(x_data))
+        elif point_gen_func == "sin":
+            x_data = np.sort(np.random.uniform(low=start, high=stop, size=num))  # Неравноудаленные точки
+            y_data = np.sin(x_data)
+        elif point_gen_func == "cos":
+            x_data = np.sort(np.random.uniform(low=start, high=stop, size=num))  # Неравноудаленные точки
+            y_data = np.cos(x_data)
+        elif point_gen_func == "exp":
+            x_data = np.sort(np.random.uniform(low=start, high=stop, size=num))  # Неравноудаленные точки
+            y_data = np.exp(x_data / stop)
+        elif point_gen_func == "power":
+            x_data = np.sort(np.random.uniform(low=start, high=stop, size=num))  # Неравноудаленные точки
+            y_data = x_data ** power_exp
+            print(x_data)
+        else:
+            raise ValueError("Неподдерживаемый метод генерации точек: " + str(point_gen_func))
+
+        # Добавляем шум к данным, если задана дисперсия
+        if noise_variance > 0.0:
+            noise_stddev = np.sqrt(noise_variance)  # Стандартное отклонение
+            noise = np.random.normal(loc=0.0, scale=noise_stddev, size=num)
+            y_data += noise
+
+        # Создание объекта p_spline
         spline_p = spline.create_p_spline(
             x=x_data,
             y=y_data,
@@ -344,25 +390,20 @@ class p_spline(spline):
             penalty_order=2,
             lambda_=1.0
         )
+        # Выполняем подгонку с функцией штрафа
+        spline_p.fit(penalty_fun=penalty_fun)
 
-        # Использование методов базового класса Spline
-        x_new = np.linspace(0, 10, 200)
-        y_new = spline_p.evaluate(x_new)
-
-        # Построение графика сплайна без граничных условий
-
-        # 1-natural
-        # 2-clamped
-        # Установка граничных условий, если они заданы
+        # Построение графика с учетом граничных условий
         if boundary_conditions == 1:
             spline_p.set_boundary_conditions(bc_type='natural')
             spline_p.plot_spline(x_range=(start, stop), num_points=200)
             print("Сплайн с граничными условиями 'natural':")
         elif boundary_conditions == 2:
-            clamped_values = {'left': 1.0, 'right': -1.0}  # Пример значений производных
+            if clamped_values is None:
+                clamped_values = {'left': 0.0, 'right': 0.0}  # Значения по умолчанию
             spline_p.set_boundary_conditions(bc_type='clamped', bc_values=clamped_values)
             spline_p.plot_spline(x_range=(start, stop), num_points=200)
-            print("Сплайн с граничными условиями 'natural':")
+            print(f"Сплайн с граничными условиями 'clamped': {clamped_values}")
         else:
             spline_p.plot_spline(x_range=(start, stop), num_points=200)
             print("Сплайн без граничных условий:")
