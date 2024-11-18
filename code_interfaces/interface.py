@@ -2,6 +2,11 @@ from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QListWidgetItem
 from code_interfaces.splines import p_spline, linear_spline
+import sys
+from numpy import sin, cos, exp
+
+test=None	#глобальная переменная для теста, в данном случае если нажать test настраиваемое окно не закроется после построения
+
 class MainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
@@ -11,8 +16,8 @@ class MainWindow(QMainWindow):
 
 		# Подключение кнопок выполнить, тест и выход к соответствующим методам
 		self.buttonExecute.clicked.connect(self.on_execute)
-		self.pushButton.clicked.connect(self.handle_p_spline)
-		self.buttonExit.clicked.connect(QApplication.quit)
+		self.pushButton.clicked.connect(self.test_variable_p_spline)
+		self.buttonExit.clicked.connect(self.quit_program)
 
 		# Список радиокнопок для типов сплайнов
 		self.spline_buttons = [
@@ -33,7 +38,8 @@ class MainWindow(QMainWindow):
 
 		# Инициализация начальных элементов списка
 		self.update_listWidget()
-
+	def quit_program(self):
+		sys.exit()
 	def update_listWidget(self):
 		"""Обновляет элементы QListWidget в зависимости от выбранного типа сплайна."""
 		# Очищаем предыдущие элементы
@@ -68,6 +74,8 @@ class MainWindow(QMainWindow):
 
 	def on_execute(self):
 		"""Проверяет, выбран ли p-сплайн, и выполняет соответствующее действие."""
+		global test
+		test = None
 		if self.p_radioButton.isChecked():
 			if self.ExampleButton.isChecked():
 				self.handle_p_spline()
@@ -106,6 +114,13 @@ class MainWindow(QMainWindow):
 	def development(self):
 		self.label_output.setText("все, кроме p-сплайна, пока в разработке.")
 
+	def test_variable_p_spline(self):
+		global test
+		test=True
+		self.slider_window = SliderWindow_p()
+		self.slider_window.show()
+
+
 	def handle_p_spline(self):
 		"""Выводит сообщение и отображает график для p-сплайна."""
 		p_spline.plot_p_spline()
@@ -132,10 +147,6 @@ class MainWindow(QMainWindow):
 		"""Открывает окно с ползунками для выбора значений."""
 		self.slider_window = SliderWindow_p()
 		self.slider_window.show()
-	def run_linear_spline_slider_window(self):
-		"""Открывает окно с ползунками для выбора значений."""
-		self.slider_window = SliderWindow_linear()
-		self.slider_window.show()
 
 
 class SliderWindow_p(QWidget):
@@ -147,8 +158,6 @@ class SliderWindow_p(QWidget):
 		self.slider_stop.valueChanged.connect(self.update_stop)
 		self.slider_num.valueChanged.connect(self.update_num)
 		self.button_apply.clicked.connect(self.validate_values)
-
-
 
 	def update_start(self, value):
 		"""Обновление начальной точки."""
@@ -179,49 +188,24 @@ class SliderWindow_p(QWidget):
 		elif num < 2:
 			print("Ошибка: количество точек должно быть больше или равно 2!")
 		else:
-			print(f"Start: {start}, Stop: {stop}, Num: {num}")
-			p_spline.plot_p_spline(start, stop, num, bc)
-			self.close()
+			print(
+				f"Start: {start}\n"
+				f"Stop: {stop}\n"
+				f"Num: {num}\n"
+				f"Boundary conditions: {boundary_conditions}\n"
+				f"Clamped values по y: {clamped_values}\n"
+				f"Penalty fun: {penalty_fun}\n"
+				f"Point gen func: {point_gen_func}\n"
+				f"Power exp: {power_exp}\n"
+				f"Noise: {noise}"
+			)
+			p_spline.plot_p_spline(start, stop, num,
+								   boundary_conditions, clamped_values,
+								   penalty_fun, point_gen_func,
+								   power_exp, noise)
+			if test is None:
+				self.close()
 
-class SliderWindow_linear(QWidget):
-	def __init__(self):
-		super().__init__()
-		uic.loadUi('code_interfaces/ui/linear_variable.ui', self)
-		# Привязка сигналов ползунков и кнопки к методам
-		self.slider_start.valueChanged.connect(self.update_start)
-		self.slider_stop.valueChanged.connect(self.update_stop)
-		self.slider_num.valueChanged.connect(self.update_num)
-		self.button_apply.clicked.connect(self.validate_values)
-
-
-
-	def update_start(self, value):
-		"""Обновление начальной точки."""
-		self.label_start.setText(f"Start: {value}")
-
-	def update_stop(self, value):
-		"""Обновление конечной точки."""
-		self.label_stop.setText(f"Stop: {value}")
-
-	def update_num(self, value):
-		"""Обновление количества точек."""
-		self.label_num.setText(f"Num: {value}")
-	def update_bc(self, value):
-		"""Обновление количества точек."""
-		self.label_num.setText(f"Num: {value}")
-
-	def validate_values(self):
-		"""Проверка и вывод значений ползунков."""
-		start, stop, num = (self.slider_start.value(),
-							self.slider_stop.value(), self.slider_num.value())
-		if start >= stop:
-			print("Ошибка: Start должен быть меньше Stop!")
-		elif num < 2:
-			print("Ошибка: количество точек должно быть больше или равно 2!")
-		else:
-			print(f"Start: {start}, Stop: {stop}, Num: {num}")
-			linear_spline.plot_linear_spline(start, stop, num)
-			self.close()
 
 def start():
 	"""Создает и запускает приложение."""
