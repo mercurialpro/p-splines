@@ -157,6 +157,11 @@ class SliderWindow_p(QWidget):
 		self.slider_start.valueChanged.connect(self.update_start)
 		self.slider_stop.valueChanged.connect(self.update_stop)
 		self.slider_num.valueChanged.connect(self.update_num)
+		self.slider_clamped_values_left.valueChanged.connect(self.update_clamped_left)
+		self.slider_clamped_values_right.valueChanged.connect(self.update_clamped_right)
+		self.slider_power.valueChanged.connect(self.update_power)
+		self.slider_noise.valueChanged.connect(self.update_noise)
+
 		self.button_apply.clicked.connect(self.validate_values)
 
 	def update_start(self, value):
@@ -169,20 +174,57 @@ class SliderWindow_p(QWidget):
 
 	def update_num(self, value):
 		"""Обновление количества точек."""
-		self.label_num.setText(f"Num: {value}")
-	def update_bc(self, value):
-		"""Обновление количества точек."""
-		self.label_num.setText(f"Num: {value}")
+		self.label_num.setText(f"Количество точек:: {value}")
+
+	def update_clamped_left(self, value):
+		self.label_clamped_left.setText(f"Clamped values: {value}")
+
+	def update_clamped_right(self, value):
+		self.label_clamped_right.setText(f"Clamped values: {value}")
+
+	def update_power(self, value):
+		self.label_power.setText(f"a= {value}")
+
+	def update_noise(self, value):
+		self.label_noise.setText(f"Шум: {value / 100}")
 
 	def validate_values(self):
 		"""Проверка и вывод значений ползунков."""
-		start, stop, num = self.slider_start.value(), self.slider_stop.value(), self.slider_num.value()
-		if self.radioButton_1.isChecked():
-			bc = None
-		elif self.radioButton_2.isChecked():
-			bc = 1
-		elif self.radioButton_3.isChecked():
-			bc = 2
+		start = self.slider_start.value()
+		stop = self.slider_stop.value()
+		num = self.slider_num.value()
+		noise = self.slider_noise.value()
+		clamped_values = {'left': self.slider_clamped_values_left.value(),
+						  'right': self.slider_clamped_values_right.value()}
+		power_exp = self.slider_power.value()
+
+		if self.radioButton_bc_natural.isChecked():
+			boundary_conditions = 'natural'
+		elif self.radioButton_bc_clamped.isChecked():
+			boundary_conditions = 'clamped'
+		else:
+			boundary_conditions = None
+
+		if self.radioButton_penalty_fun_sin.isChecked():
+			penalty_fun = sin
+		elif self.radioButton_penalty_fun_cos.isChecked():
+			penalty_fun = cos
+		elif self.radioButton_penalty_fun_exp.isChecked():
+			penalty_fun = exp
+		else:
+			penalty_fun = None
+
+		if self.radioButton_generation_sin.isChecked():
+			point_gen_func = "sin"
+		elif self.radioButton_generation_cos.isChecked():
+			point_gen_func = "cos"
+		elif self.radioButton_generation_exp.isChecked():
+			point_gen_func = "exp"
+		elif self.radioButton_generation_power.isChecked():
+			point_gen_func = "power"
+		else:
+			point_gen_func = "random"
+
 		if start >= stop:
 			print("Ошибка: Start должен быть меньше Stop!")
 		elif num < 2:
