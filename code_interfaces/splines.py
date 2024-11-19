@@ -401,13 +401,11 @@ class p_spline(spline):
         spline_p.fit(penalty_fun=penalty_fun)
 
         # Построение графика с учетом граничных условий
-        if boundary_conditions == 1:
+        if boundary_conditions == 'natural':
             spline_p.set_boundary_conditions(bc_type='natural')
             spline_p.plot_spline(x_range=(start, stop), num_points=200)
             print("Сплайн с граничными условиями 'natural':")
-        elif boundary_conditions == 2:
-            if clamped_values is None:
-                clamped_values = {'left': 0.0, 'right': 0.0}  # Значения по умолчанию
+        elif boundary_conditions == 'clamped':
             spline_p.set_boundary_conditions(bc_type='clamped', bc_values=clamped_values)
             spline_p.plot_spline(x_range=(start, stop), num_points=200)
             print(f"Сплайн с граничными условиями 'clamped': {clamped_values}")
