@@ -231,6 +231,8 @@ class p_spline(spline):
         # Применяем функтор к разностной матрице, если он задан
         if penalty_fun is not None:
             D = penalty_fun(D)
+            # Преобразуем элементы в положительные значения
+            D = np.abs(D)
 
         # Создаем штрафную матрицу P
         P = self.lambda_ * D.T @ D
