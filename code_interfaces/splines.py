@@ -376,10 +376,15 @@ class p_spline(spline):
         else:
             raise ValueError("Неподдерживаемый метод генерации точек: " + str(point_gen_func))
 
-        # Добавляем шум к данным, если задана дисперсия
+        # Добавляем шум к данным, если задана доля шума
         if noise_variance > 0.0:
-            noise_stddev = np.sqrt(noise_variance)  # Стандартное отклонение
+            noise_variance = noise_variance / 100  # Преобразуем из процентов в долю
+            # Вычисляем L2-норму функции y
+            y_norm = np.sqrt(np.sum(y_data ** 2))  # ||y||_2
+            # Генерируем шум
+            noise_stddev = noise_variance * y_norm  # Масштабируем шум по L2-норме
             noise = np.random.normal(loc=0.0, scale=noise_stddev, size=num)
+            # Добавляем шум к данным
             y_data += noise
 
         # Создание объекта p_spline

@@ -277,7 +277,7 @@
    <item>
     <widget class="QLabel" name="label_noise">
      <property name="text">
-      <string>Шум: 0.0</string>
+      <string>Шум: 0%</string>
      </property>
     </widget>
    </item>
@@ -306,7 +306,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

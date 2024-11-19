@@ -186,7 +186,7 @@ class SliderWindow_p(QWidget):
 		self.label_power.setText(f"a= {value}")
 
 	def update_noise(self, value):
-		self.label_noise.setText(f"Шум: {value / 100}")
+		self.label_noise.setText(f"Шум: {value}%")
 
 	def validate_values(self):
 		"""Проверка и вывод значений ползунков."""
@@ -239,7 +239,7 @@ class SliderWindow_p(QWidget):
 				f"Penalty fun: {penalty_fun}\n"
 				f"Point gen func: {point_gen_func}\n"
 				f"Power exp: {power_exp}\n"
-				f"Noise: {noise}"
+				f"Noise: {noise}%"
 			)
 			p_spline.plot_p_spline(start, stop, num,
 								   boundary_conditions, clamped_values,
