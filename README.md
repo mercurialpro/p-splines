@@ -18,7 +18,6 @@
 - **Осипов Е.А.** - [egorosipovandr@gmail.com](mailto:egorosipovandr@gmail.com)
 - **Кобцев С.Д.** - [sergikobas@gmail.com](mailto:sergikobas@gmail.com)
 - **Тунис И.С.** - [tunisilya@gmail.com](mailto:tunisilya@gmail.com)
-- **Васильев К.С.** - [k1r1k2016@yandex.ru](mailto:k1r1k2016@yandex.ru)
 - **Харламов А.Д.** - [harlamov1130@gmail.com](mailto:harlamov1130@gmail.com)
 - **Швецова О.С.** - [oksana.shvetsova.03@mail.ru](mailto:oksana.shvetsova.03@mail.ru)
 - **Ерохина Э.А.** - [elya.erokhina23@mail.ru](mailto:elya.erokhina23@mail.ru)
