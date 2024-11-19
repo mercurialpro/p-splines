@@ -1,7 +1,7 @@
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QListWidgetItem
-from code_interfaces.splines import p_spline, linear_spline
+from code_interfaces.splines import p_spline
 import sys
 from numpy import sin, cos, exp
 
@@ -86,9 +86,9 @@ class MainWindow(QMainWindow):
 
 		elif self.linear_radioButton.isChecked():
 			if self.ExampleButton.isChecked():
-				self.handle_linear_spline()
+				self.development()
 			elif self.VariableButton.isChecked():
-				self.run_linear_spline_slider_window()
+				self.development()
 			else:
 				self.label_output.setText("Выберите пример.")
 
@@ -127,8 +127,6 @@ class MainWindow(QMainWindow):
 		self.label_output.setText("График p-сплайн был выбран и нажата кнопка Выполнить.")
 
 	def handle_linear_spline(self):
-		linear_spline.plot_linear_spline()
-		self.label_output.setText("График линейного сплайна был выбран и нажата кнопка Выполнить.")
 		pass
 
 	def handle_quadratic_spline(self):

@@ -67,59 +67,6 @@ class spline:
         """
         return p_spline(x, y, knots, degree, penalty_order, lambda_, dimension)
 
-# Подкласс линейный сплайн
-class linear_spline(spline):
-    def __init__(self, knots, coefficients):
-        """
-        Инициализация класса LinearSpline.
-
-        Параметры:
-        - knots (array-like): Узлы линейного сплайна.
-        - coefficients (array-like): Значения в узлах (они же коэффициенты для линейного сплайна).
-        """
-        super().__init__(knots, degree=1, coefficients=coefficients)
-
-    def evaluate(self, x):
-        """
-        Вычисление значения линейного сплайна в точке x с помощью линейной интерполяции.
-        """
-        return np.interp(x, self.knots, self.coefficients)
-
-    def plot_spline(self, **kwargs):
-        """
-        Построение линейного сплайна, соединяя каждый узел отрезками напрямую.
-
-        """
-        plt.figure(figsize=(10, 6))
-        plt.plot(self.knots, self.coefficients, 'b-', label='LinearSpline сплайн')  # Линия синего цвета
-        plt.plot(self.knots, self.coefficients, 'ro', label="Узлы сплайна")  # Точки узлов красные
-        plt.xlabel("x")
-        plt.ylabel("y")
-        plt.title("Построение LinearSpline сплайна")
-        plt.legend()
-        plt.grid(True)
-        plt.show()
-
-    @staticmethod
-    def plot_linear_spline(start=0, stop=10, num=5):
-        """
-        Статический метод для генерации случайных точек и построения линейного сплайна.
-
-        Параметры:
-        - start (float): Начальное значение диапазона x.
-        - stop (float): Конечное значение диапазона x.
-        - num (int): Количество случайных точек.
-        """
-        # Генерация случайных значений для x и y
-        x_data = np.sort(np.random.uniform(start, stop, num))  # Случайные значения x
-        y_data = np.random.uniform(0, 10, num)                 # Случайные значения y
-
-        # Создание объекта линейного сплайна
-        linearspline = linear_spline(x_data, y_data)
-
-        # Построение графика линейного сплайна
-        linearspline.plot_spline()
-
 # Подкласс p_spline
 class p_spline(spline):
     def __init__(self, x, y, knots=None, degree=3, penalty_order=2, lambda_=1.0, dimension=1):
@@ -420,7 +367,6 @@ class p_spline(spline):
 # Для отладки
 if __name__ == "__main__":
     #p_spline.plot_p_spline()
-    #linear_spline.plot_linear_spline(0, 30, 100)
     pass
 
 
