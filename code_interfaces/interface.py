@@ -83,11 +83,11 @@ class MainWindow(QMainWindow):
 			else:
 				self.label_output.setText("Выберите пример.")
 
-		elif self.linear_radioButton.isChecked():
+		elif self.b_radioButton.isChecked():
 			if self.ExampleButton.isChecked():
-				self.development()
+				self.handle_b_spline()
 			elif self.VariableButton.isChecked():
-				self.development()
+				self.run_b_spline_slider_window()
 			else:
 				self.label_output.setText("Выберите пример.")
 
@@ -130,7 +130,6 @@ class MainWindow(QMainWindow):
 		pass
 
 	def handle_b_spline(self):
-		pass
 		b_spline.plot_b_spline(2,10)
 		self.label_output.setText("График b-сплайн был выбран и нажата кнопка Выполнить.")
 
