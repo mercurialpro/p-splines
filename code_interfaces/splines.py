@@ -363,6 +363,88 @@ class p_spline(spline):
         # Использование специфичного метода p_spline
         spline_p.method_specific_to_p_spline()
 
+# Подкласс BSpline для B-сплайнов
+class b_spline(spline):
+    def __init__(self, degree, control_points):
+        self.control_points = control_points
+        self.degree = degree
+        super().__init__([], degree)
+        self.knots = self.generate_knots()  # Генерация узлового вектора
+
+    def generate_knots(self):
+        """
+        Автоматическая генерация узлового вектора.
+        """
+        n = len(self.control_points)  # Количество контрольных точек
+        m = n + self.degree + 1  # Количество узлов
+        knots = [0] * (self.degree + 1)  # Начальные узлы
+
+        # Промежуточные узлы распределены
+        interior_knots = np.linspace(1, n - self.degree - 3, m - 2 * (self.degree + 1))   # degree - 1
+        # interior_knots = np.linspace(0, n - self.degree, m - 2 * (self.degree + 1))
+        knots.extend(interior_knots)
+        knots.extend([n - self.degree - 1] * (self.degree + 1))  # Конечные узлы
+        return np.array(knots)
+
+    def basis_function(self, i, k, t):
+        if k == 0:
+            return 1.0 if self.knots[i] <= t < self.knots[i + 1] else 0.0
+        else:
+            coeff1 = 0.0
+            if self.knots[i + k] != self.knots[i]:
+                coeff1 = (t - self.knots[i]) / (self.knots[i + k] - self.knots[i]) * self.basis_function(i, k - 1, t)
+            coeff2 = 0.0
+            if self.knots[i + k + 1] != self.knots[i + 1]:
+                coeff2 = (self.knots[i + k + 1] - t) / (
+                        self.knots[i + k + 1] - self.knots[i + 1]) * self.basis_function(i + 1, k - 1, t)
+            return coeff1 + coeff2
+
+    def evaluate(self, t):
+        n = len(self.control_points) - 1
+        result = np.zeros((len(self.control_points[0]),))
+
+        for i in range(n + 1):
+            b = self.basis_function(i, self.degree, t)
+            result += b * np.array(self.control_points[i])
+
+        return result
+
+    def plot(self):
+        t_values = np.linspace(self.knots[self.degree], self.knots[-self.degree - 1], 100)
+        # t_values = np.linspace(self.knots[degree], self.knots[-degree - 1], 100)
+        spline_points = np.array([self.evaluate(t) for t in t_values])
+        spline_points[-1] = spline_points[-2]
+
+        plt.figure(figsize=(8, 6))
+        plt.plot(spline_points[:, 0], spline_points[:, 1], label='B-Сплайн', color='blue')
+
+        control_points = np.array(self.control_points)
+        plt.plot(control_points[:, 0], control_points[:, 1], 'ro--', label='Контрольные точки')
+
+        plt.title("B-Сплайн")
+        plt.xlabel("Ось X")
+        plt.ylabel("Ось Y")
+        plt.legend()
+        plt.grid()
+        plt.axis("equal")
+        plt.show()
+
+
+# Генерация случайных контрольных точек
+    def generate_random_control_points(n, x_range=(0, 10), y_range=(0, 10)):
+        """
+        Генерирует n случайных контрольных точек.
+        """
+        x_coords = np.sort(np.random.uniform(x_range[0], x_range[1], n))
+        y_coords = np.random.uniform(y_range[0], y_range[1], n)
+        return list(zip(x_coords, y_coords))
+
+    @staticmethod
+    def plot_b_spline(degree=2, num=2):
+        control_points = b_spline.generate_random_control_points(num)
+        spline = b_spline(degree, control_points)
+        spline.plot()
+
 
 # Для отладки
 if __name__ == "__main__":

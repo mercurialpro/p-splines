@@ -1,12 +1,11 @@
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QListWidgetItem
-from code_interfaces.splines import p_spline
+from code_interfaces.splines import p_spline, b_spline
 import sys
 from numpy import sin, cos, exp
 
 test=None	#глобальная переменная для теста, в данном случае если нажать test настраиваемое окно не закроется после построения
-
 class MainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
@@ -126,24 +125,26 @@ class MainWindow(QMainWindow):
 		p_spline.plot_p_spline()
 		self.label_output.setText("График p-сплайн был выбран и нажата кнопка Выполнить.")
 
-	def handle_linear_spline(self):
-		pass
-
-	def handle_quadratic_spline(self):
-		pass
-	def handle_cubic_spline(self):
-		pass
 
 	def handle_z_spline(self):
 		pass
 
 	def handle_b_spline(self):
 		pass
+		b_spline.plot_b_spline(2,10)
+		self.label_output.setText("График b-сплайн был выбран и нажата кнопка Выполнить.")
 
-	#слайдер пока реализован только для p-сплайна
+	#слайдер пока реализован только для p-сплайна и b-сплайна
 	def run_p_spline_slider_window(self):
 		"""Открывает окно с ползунками для выбора значений."""
+		self.label_output.setText("График p-сплайн был выбран и нажата кнопка Выполнить.")
 		self.slider_window = SliderWindow_p()
+		self.slider_window.show()
+
+	def run_b_spline_slider_window(self):
+		"""Открывает окно с ползунками для выбора значений."""
+		self.label_output.setText("График b-сплайн был выбран и нажата кнопка Выполнить.")
+		self.slider_window = SliderWindow_b()
 		self.slider_window.show()
 
 
@@ -246,6 +247,47 @@ class SliderWindow_p(QWidget):
 			if test is None:
 				self.close()
 
+class SliderWindow_b(QWidget):
+	def __init__(self):
+		super().__init__()
+		uic.loadUi('code_interfaces/ui/b_variable.ui', self)
+		# Привязка сигналов ползунков и кнопки к методам
+		self.slider_start.valueChanged.connect(self.update_start)
+		self.slider_stop.valueChanged.connect(self.update_stop)
+		self.slider_num.valueChanged.connect(self.update_num)
+		self.slider_degree.valueChanged.connect(self.update_degree)
+
+		self.button_apply.clicked.connect(self.validate_values)
+
+	def update_start(self, value):
+		"""Обновление начальной точки."""
+		self.label_start.setText(f"Start: {value}")
+
+	def update_stop(self, value):
+		"""Обновление конечной точки."""
+		self.label_stop.setText(f"Stop: {value}")
+
+	def update_num(self, value):
+		"""Обновление количества точек."""
+		self.label_num.setText(f"Количество точек: {value}")
+	def update_degree(self, value):
+		"""Обновление количества точек."""
+		self.label_degree.setText(f"Степень: {value}")
+
+	def validate_values(self):
+		"""Проверка и вывод значений ползунков."""
+		start=self.slider_start.value()
+		stop=self.slider_stop.value()
+		num=self.slider_num.value()
+		degree=self.slider_degree.value()
+
+		if start >= stop:
+			print("Ошибка: Start должен быть меньше Stop!")
+		elif num < 2:
+			print("Ошибка: количество точек должно быть больше или равно 2!")
+		else:
+			print(f"Degree: {degree}, Num: {num}")
+			b_spline.plot_b_spline(degree, num)
 
 def start():
 	"""Создает и запускает приложение."""
