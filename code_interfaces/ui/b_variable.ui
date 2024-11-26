@@ -104,27 +104,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_ro">
-     <property name="text">
-      <string>Пунктир по узлам</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QRadioButton" name="radioButton_rotrue">
-     <property name="text">
-      <string>Да</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QRadioButton" name="radioButton_rofalse">
-     <property name="text">
-      <string>Нет</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QPushButton" name="button_apply">
      <property name="text">
       <string>Построить</string>
