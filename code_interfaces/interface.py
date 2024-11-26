@@ -21,9 +21,6 @@ class MainWindow(QMainWindow):
 		# Список радиокнопок для типов сплайнов
 		self.spline_buttons = [
 			self.p_radioButton,
-			self.linear_radioButton,
-			self.quadratic_radioButton,
-			self.cubic_radioButton,
 			self.z_radioButton,
 			self.b_radioButton
 		]
@@ -48,12 +45,6 @@ class MainWindow(QMainWindow):
 		items = []
 		if self.p_radioButton.isChecked():
 			items = ["Опции для p-сплайна"]#, "Опция 2 для p-сплайна", "Опция 3 для p-сплайна"]
-		elif self.linear_radioButton.isChecked():
-			items = ["Опции для линейного сплайна"]
-		elif self.quadratic_radioButton.isChecked():
-			items = ["Опции для квадратичного сплайна"]
-		elif self.cubic_radioButton.isChecked():
-			items = ["Опции для кубического сплайна"]
 		elif self.z_radioButton.isChecked():
 			items = ["Опции для z-сплайна"]#, "Опция 2 для z-сплайна"]
 		elif self.b_radioButton.isChecked():
@@ -95,12 +86,6 @@ class MainWindow(QMainWindow):
 			self.handle_z_spline()
 			self.development()
 
-		elif self.b_radioButton.isChecked():
-			self.handle_b_spline()
-			self.development()
-
-		else:
-			self.label_output.setText("Выберите тип сплайна.")
 
 
 	def development(self):
