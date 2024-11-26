@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SliderWindow</class>
+ <widget class="QWidget" name="SliderWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>431</width>
+    <height>347</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Выбор значений</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_start">
+     <property name="text">
+      <string>Start: 0</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_start">
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_stop">
+     <property name="text">
+      <string>Stop: 10</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_stop">
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>10</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_degree">
+     <property name="text">
+      <string>Степень: 2</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_degree">
+     <property name="maximum">
+      <number>4</number>
+     </property>
+     <property name="value">
+      <number>2</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_num">
+     <property name="text">
+      <string>Количество точек: 10</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="slider_num">
+     <property name="minimum">
+      <number>2</number>
+     </property>
+     <property name="maximum">
+      <number>40</number>
+     </property>
+     <property name="value">
+      <number>10</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_ro">
+     <property name="text">
+      <string>Пунктир по узлам</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_rotrue">
+     <property name="text">
+      <string>Да</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radioButton_rofalse">
+     <property name="text">
+      <string>Нет</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="button_apply">
+     <property name="text">
+      <string>Построить</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
