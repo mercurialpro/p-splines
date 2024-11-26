@@ -91,13 +91,6 @@ class MainWindow(QMainWindow):
 			else:
 				self.label_output.setText("Выберите пример.")
 
-		elif self.quadratic_radioButton.isChecked():
-			self.handle_quadratic_spline()
-			self.development()
-		elif self.cubic_radioButton.isChecked():
-			self.handle_cubic_spline()
-			self.development()
-
 		elif self.z_radioButton.isChecked():
 			self.handle_z_spline()
 			self.development()
