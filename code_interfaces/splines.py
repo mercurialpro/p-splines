@@ -211,8 +211,8 @@ class p_spline(spline):
                 ])
 
                 # Добавляем эти условия в систему
-                A = np.vstack([A, B_der2_left, B_der2_right])
-                rhs = np.hstack([rhs, 0, 0])
+                self.A = np.vstack([A, B_der2_left, B_der2_right])
+                self.rhs = np.hstack([rhs, 0, 0])
 
             elif bc_type == 'clamped':
                 # Первая производная на концах задана
