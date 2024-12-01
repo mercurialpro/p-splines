@@ -178,6 +178,8 @@ class SliderWindow_p(QWidget):
 			boundary_conditions = 'natural'
 		elif self.radioButton_bc_clamped.isChecked():
 			boundary_conditions = 'clamped'
+		elif self.radioButton_bc_cyclic.isChecked():
+			boundary_conditions = 'cyclic'
 		else:
 			boundary_conditions = None
 
@@ -217,10 +219,10 @@ class SliderWindow_p(QWidget):
 				f"Power exp: {power_exp}\n"
 				f"Noise: {noise}%"
 			)
-			p_spline.plot_p_spline(start, stop, num,
-								   boundary_conditions, clamped_values,
-								   penalty_fun, point_gen_func,
-								   power_exp, noise)
+			p_spline.plot_p_spline(start=start, stop=stop, num=num,
+								   boundary_conditions=boundary_conditions, clamped_values=clamped_values,
+								   penalty_fun=penalty_fun, point_gen_func=point_gen_func,
+								   power_exp=power_exp, noise_variance=noise)
 			if test is None:
 				self.close()
 

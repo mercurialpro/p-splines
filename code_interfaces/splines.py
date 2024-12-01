@@ -126,8 +126,8 @@ class p_spline(spline):
             Для 'clamped' требуется {'left': value, 'right': value}.
             Для 'natural' не нужны дополнительные значения.
         """
-        if bc_type not in ['natural', 'clamped']:
-            raise ValueError("Поддерживаемые типы граничных условий: 'natural', 'clamped'.")
+        if bc_type not in ['natural', 'clamped','cyclic']:
+            raise ValueError("Поддерживаемые типы граничных условий: 'natural', 'clamped', 'cyclic'.")
 
         if bc_type == 'clamped':
             if (bc_values is None or
@@ -190,6 +190,10 @@ class p_spline(spline):
         A = BtB + P
         rhs = Bty.copy()
 
+        # Сохраняем систему как атрибуты объекта
+        self.A = A
+        self.rhs = rhs
+
         # Обработка граничных условий
         if self.boundary_conditions is not None:
             bc_type = self.boundary_conditions['type']
@@ -224,17 +228,70 @@ class p_spline(spline):
                 ])
 
                 # Добавляем эти условия в систему
-                A = np.vstack([A, B_der1_left, B_der1_right])
-                rhs = np.hstack([rhs, bc_values['left'], bc_values['right']])
+                self.A = np.vstack([A, B_der1_left, B_der1_right])
+                self.rhs = np.hstack([rhs, bc_values['left'], bc_values['right']])
+
+            elif bc_type == 'cyclic':
+                self.set_cyclic_boundary_conditions()
 
         # Решаем систему уравнений с учетом граничных условий
         try:
-            c = np.linalg.lstsq(A, rhs, rcond=None)[0]
+            c = np.linalg.lstsq(self.A, self.rhs, rcond=None)[0]
         except np.linalg.LinAlgError as e:
             raise np.linalg.LinAlgError(f"Ошибка при решении системы уравнений: {e}")
 
         self.coefficients = c
-        self.spline = BSpline(t, c, k)
+        self.spline = BSpline(self.knots, c, self.degree)
+
+    def set_cyclic_boundary_conditions(self):
+        """
+		Задает циклические граничные условия для сплайна.
+		"""
+        if self.knots is None or self.coefficients is None:
+            raise ValueError("Сплайн не был инициализирован корректно.")
+
+        n_bases = len(self.coefficients)
+        t = self.knots
+        k = self.degree
+
+        # Условия на совпадение значений сплайна на концах
+        B_start = np.array([
+            BSpline(t, np.eye(n_bases)[i], k)(self.x[0])
+            for i in range(n_bases)
+        ])
+        B_end = np.array([
+            BSpline(t, np.eye(n_bases)[i], k)(self.x[-1])
+            for i in range(n_bases)
+        ])
+        continuity_row = B_start - B_end
+
+        # Условия на совпадение первой производной
+        B_der1_start = np.array([
+            BSpline(t, np.eye(n_bases)[i], k).derivative(1)(self.x[0])
+            for i in range(n_bases)
+        ])
+        B_der1_end = np.array([
+            BSpline(t, np.eye(n_bases)[i], k).derivative(1)(self.x[-1])
+            for i in range(n_bases)
+        ])
+        derivative1_row = B_der1_start - B_der1_end
+
+        # Нормализация строковых условий
+        continuity_row /= np.linalg.norm(continuity_row)
+        derivative1_row /= np.linalg.norm(derivative1_row)
+
+        # Увеличиваем вес условий цикличности
+        weight = 1e3
+        continuity_row *= weight
+        derivative1_row *= weight
+
+        # Логирование
+        print("Continuity row:", continuity_row)
+        print("Derivative1 row:", derivative1_row)
+
+        # Обновляем матрицу A и правую часть rhs
+        self.A = np.vstack([self.A, continuity_row, derivative1_row])
+        self.rhs = np.hstack([self.rhs, 0, 0])
 
     def evaluate(self, x):
         """
@@ -325,6 +382,13 @@ class p_spline(spline):
         else:
             raise ValueError("Неподдерживаемый метод генерации точек: " + str(point_gen_func))
 
+
+        if boundary_conditions == "cyclic":
+            x_data = np.sort(np.concatenate([x_data, np.array([start, stop])]))
+            y_data = np.concatenate([y_data, [y_data[0], y_data[-1]]])  # Добавляем значения на концах
+
+
+
         # Добавляем шум к данным, если задана доля шума
         if noise_variance > 0.0:
             noise_variance = noise_variance / 100  # Преобразуем из процентов в долю
@@ -348,17 +412,18 @@ class p_spline(spline):
         spline_p.fit(penalty_fun=penalty_fun)
 
         # Построение графика с учетом граничных условий
-        if boundary_conditions == 'natural':
-            spline_p.set_boundary_conditions(bc_type='natural')
-            spline_p.plot_spline(x_range=(start, stop), num_points=200)
-            print("Сплайн с граничными условиями 'natural':")
-        elif boundary_conditions == 'clamped':
-            spline_p.set_boundary_conditions(bc_type='clamped', bc_values=clamped_values)
-            spline_p.plot_spline(x_range=(start, stop), num_points=200)
-            print(f"Сплайн с граничными условиями 'clamped': {clamped_values}")
-        else:
-            spline_p.plot_spline(x_range=(start, stop), num_points=200)
-            print("Сплайн без граничных условий:")
+        print(f"Сплайн с граничными условиями {boundary_conditions}:")
+        spline_p.set_boundary_conditions(bc_type=boundary_conditions, bc_values=clamped_values)
+        spline_p.plot_spline(x_range=(start, stop), num_points=200)
+
+        # Вывод значений сплайна и его производной на концах
+        S_start = spline_p.evaluate(x_data[0])
+        S_end = spline_p.evaluate(x_data[-1])
+        S_prime_start = spline_p.spline.derivative(1)(x_data[0])
+        S_prime_end = spline_p.spline.derivative(1)(x_data[-1])
+
+        print(f"S(x_start) = {S_start}, S(x_end) = {S_end}")
+        print(f"S'(x_start) = {S_prime_start}, S'(x_end) = {S_prime_end}")
 
         # Использование специфичного метода p_spline
         spline_p.method_specific_to_p_spline()
