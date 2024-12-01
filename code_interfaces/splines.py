@@ -126,7 +126,7 @@ class p_spline(spline):
             Для 'clamped' требуется {'left': value, 'right': value}.
             Для 'natural' не нужны дополнительные значения.
         """
-        if bc_type not in ['natural', 'clamped','cyclic']:
+        if bc_type not in [None,'natural', 'clamped','cyclic']:
             raise ValueError("Поддерживаемые типы граничных условий: 'natural', 'clamped', 'cyclic'.")
 
         if bc_type == 'clamped':
@@ -286,8 +286,8 @@ class p_spline(spline):
         derivative1_row *= weight
 
         # Логирование
-        print("Continuity row:", continuity_row)
-        print("Derivative1 row:", derivative1_row)
+        #print("Continuity row:", continuity_row)
+        #print("Derivative1 row:", derivative1_row)
 
         # Обновляем матрицу A и правую часть rhs
         self.A = np.vstack([self.A, continuity_row, derivative1_row])
@@ -390,15 +390,12 @@ class p_spline(spline):
 
 
         # Добавляем шум к данным, если задана доля шума
-        if noise_variance > 0.0:
-            noise_variance = noise_variance / 100  # Преобразуем из процентов в долю
-            # Вычисляем L2-норму функции y
-            y_norm = np.sqrt(np.sum(y_data ** 2))  # ||y||_2
-            # Генерируем шум
-            noise_stddev = noise_variance * y_norm  # Масштабируем шум по L2-норме
-            noise = np.random.normal(loc=0.0, scale=noise_stddev, size=num)
-            # Добавляем шум к данным
-            y_data += noise
+            if noise_variance > 0.0:
+                noise_variance = noise_variance / 100  # Преобразуем из процентов в долю
+                y_norm = np.sqrt(np.sum(y_data ** 2))  # ||y||_2
+                noise_stddev = noise_variance * y_norm  # Масштабируем шум по L2-норме
+                noise = np.random.normal(loc=0.0, scale=noise_stddev, size=len(y_data))  # Размер совпадает с y_data
+                y_data += noise
 
         # Создание объекта p_spline
         spline_p = spline.create_p_spline(
@@ -416,14 +413,15 @@ class p_spline(spline):
         spline_p.set_boundary_conditions(bc_type=boundary_conditions, bc_values=clamped_values)
         spline_p.plot_spline(x_range=(start, stop), num_points=200)
 
-        # Вывод значений сплайна и его производной на концах
-        S_start = spline_p.evaluate(x_data[0])
-        S_end = spline_p.evaluate(x_data[-1])
-        S_prime_start = spline_p.spline.derivative(1)(x_data[0])
-        S_prime_end = spline_p.spline.derivative(1)(x_data[-1])
+        if boundary_conditions == 'cyclic':
+            # Вывод значений сплайна и его производной на концах
+            S_start = spline_p.evaluate(x_data[0])
+            S_end = spline_p.evaluate(x_data[-1])
+            S_prime_start = spline_p.spline.derivative(1)(x_data[0])
+            S_prime_end = spline_p.spline.derivative(1)(x_data[-1])
 
-        print(f"S(x_start) = {S_start}, S(x_end) = {S_end}")
-        print(f"S'(x_start) = {S_prime_start}, S'(x_end) = {S_prime_end}")
+            print(f"S(x_start) = {S_start}, S(x_end) = {S_end}")
+            print(f"S'(x_start) = {S_prime_start}, S'(x_end) = {S_prime_end}")
 
         # Использование специфичного метода p_spline
         spline_p.method_specific_to_p_spline()
